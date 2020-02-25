@@ -1,4 +1,4 @@
-# desc "Explaining what the task does"
-# task :acme_plugin_dropin do
-#   # Task goes here
-# end
+desc "acme_plugin"
+task :acme_plugin => :environment do
+  AcmePluginDropin.generate_cert
+end
