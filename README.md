@@ -1,28 +1,58 @@
 # AcmePluginDropin
-Short description and motivation.
+
+This is a dropin replacement for the "acme_plugin" gem. The "acme_plugin" gem uses the v1 endpoint for Lets Encrypt which is being deprecated in June.
 
 ## Usage
-How to use my plugin.
+
 
 ## Installation
-Add this line to your application's Gemfile:
+
+remove the "acme_plugin" from your Gemfile and replace with:
+
 
 ```ruby
-gem 'acme_plugin_dropin'
+gem 'acme_plugin_dropin', git: 'https://github.com/rounders/acme_plugin_dropin.git'
 ```
 
-And then execute:
-```bash
-$ bundle
+update your routes file as follows:
+
+replace
+
+```ruby
+mount AcmePlugin::Engine, at: '/'
 ```
 
-Or install it yourself as:
-```bash
-$ gem install acme_plugin_dropin
+with
+
+```ruby
+mount AcmePluginDropin::Engine, at: '/'
 ```
 
-## Contributing
-Contribution directions go here.
+update your config/acme_plugin.yml file as follows:
+
+replace any instances of:
+
+```
+endpoint: 'https://acme-v01.api.letsencrypt.org/'
+```
+
+with:
+
+```
+directory: 'https://acme-v02.api.letsencrypt.org/directory'
+```
+
+and any instances of:
+
+```
+endpoint: https://acme-staging.api.letsencrypt.org
+```
+
+with:
+
+```
+directory: 'https://acme-staging-v02.api.letsencrypt.org/directory'
+```
 
 ## License
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
