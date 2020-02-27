@@ -16,6 +16,8 @@ module AcmePluginDropin
       order = client.new_order(identifiers: domains)
 
       order.authorizations.each do |authorization|
+        puts "validating #{authorization.identifier["value"]}"
+
         challenge = authorization.http
         Challenge.store_challenge(challenge.file_content, options)
 

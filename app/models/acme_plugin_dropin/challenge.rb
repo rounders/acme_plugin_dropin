@@ -10,6 +10,7 @@ module AcmePluginDropin
       Dir.mkdir(challenge_dir) unless File.directory?(challenge_dir)
 
       File.open(File.join(challenge_dir, 'challenge'), 'w') { |file| file.write(challenge_text) }
+      puts "Challenge #{challenge_text} has been stored"
     end
   end
 end
