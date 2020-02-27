@@ -1,30 +1,15 @@
 module AcmePluginDropin
   class GeneratesCertificates
-    def self.load_config(filename = Rails.root.join('config', 'acme_plugin.yml'))
-      contents = File.read(filename)
-      config_hash = YAML.load(ERB.new(contents).result)
-
-      ActiveSupport::HashWithIndifferentAccess.new(config_hash.fetch(Rails.env))
-    end
-
-    def self.current_challenge
-      options = load_config
-      challenge_dir = options[:challenge_dir_name]
-      response = IO.read(File.join(Rails.root, challenge_dir, 'challenge'))
-    end
-
     def self.call
       new.call
     end
 
     attr_reader :options, :domains
 
-    def initialize
-      @options = self.class.load_config
+    def initialize(options = Config.load_config)
+      @options = options
 
       @domains = options[:domain].split(' ')
-      options[:output_cert_dir].sub!(/\A\//,'')
-      options[:challenge_dir_name].sub!(/\A\//,'')
     end
 
     def call
@@ -32,7 +17,7 @@ module AcmePluginDropin
 
       order.authorizations.each do |authorization|
         challenge = authorization.http
-        store_challenge(challenge)
+        Challenge.store_challenge(challenge.file_content, options)
 
         challenge.request_validation
 
@@ -73,13 +58,6 @@ module AcmePluginDropin
 
       puts "writing #{cert_file}"
       File.open(cert_file, 'w') {|f| f.write(cert) }
-    end
-
-    def store_challenge(challenge)
-      challenge_dir = File.join(Rails.root, options[:challenge_dir_name])
-      Dir.mkdir(challenge_dir) unless File.directory?(challenge_dir)
-
-      File.open(File.join(challenge_dir, 'challenge'), 'w') { |file| file.write(challenge.file_content) }
     end
 
     def private_key
